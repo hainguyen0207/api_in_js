@@ -1,5 +1,8 @@
 # Burp Extension: API JavaScript Extractor
 
+![image](https://github.com/user-attachments/assets/8a6decb3-5d08-4049-83d7-d6c05d85f391)
+
+
 ## Mục tiêu
 Phát hiện và theo dõi các endpoint API được nhúng trong JavaScript hoặc HTML của response. Extension sẽ so sánh các endpoint này với các request đã đi qua Burp (Proxy, Repeater, Scanner...) để xác định API nào đã được gọi.
 
