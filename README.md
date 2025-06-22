@@ -1,6 +1,7 @@
 # Burp Extension: API JavaScript Extractor
 
-![image](https://github.com/user-attachments/assets/8a6decb3-5d08-4049-83d7-d6c05d85f391)
+![image](https://github.com/user-attachments/assets/256f65ae-f670-417d-9cda-1b54788f5951)
+
 
 
 ## Mục tiêu
