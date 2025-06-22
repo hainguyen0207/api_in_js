@@ -1,6 +1,8 @@
 # Burp Extension: API JavaScript Extractor
 
-![image](https://github.com/user-attachments/assets/256f65ae-f670-417d-9cda-1b54788f5951)
+![image](https://github.com/user-attachments/assets/6661320d-da41-4ebe-92d9-f07d6169a7e2)
+
+
 
 
 
@@ -35,6 +37,7 @@ Phát hiện và theo dõi các endpoint API được nhúng trong JavaScript ho
 
 - Nút "Reset Status"  
   → Thủ công kiểm tra lại các API có trạng thái "x" xem đã xuất hiện trong SiteMap chưa → tự động chuyển sang "✓" nếu có.
+  **Ae làm dự án gần xong thì bấm nút reset. Xem còn những api js nào có trạng thái "x" chưa check thì trace lại để kiểm tra nhé.**
 
 - Nút "Clear"  
   → Xóa toàn bộ dữ liệu bảng hiện tại và file lưu trữ.
