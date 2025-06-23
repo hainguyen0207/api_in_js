@@ -4,7 +4,7 @@ import java.util.*;
 
 public class test {
     public static void main(String[] args) {
-        File file = new File("C:\\Users\\hainguyen\\Downloads\\ExtensionTemplateProject\\src\\main\\java\\response.js");
+        File file = new File("C:\\Users\\hainguyen\\Downloads\\ExtensionTemplateProject\\src\\main\\java\\data.html");
 
         StringBuilder content = new StringBuilder();
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
@@ -19,7 +19,8 @@ public class test {
 
         // Cho phép dấu {}, dùng cho RESTful path param
 
-        Pattern pattern = Pattern.compile("(['\"`])((https?:)?[\\w:/?=.&+%;\\-{}$]+)\\1");
+//        Pattern pattern = Pattern.compile("(['\"`])((https?:)?[\\w:/?=.&+%;\\-{}$]+)\\1");
+        Pattern pattern = Pattern.compile("(['\"`])((https?:)?[\\\\/\\w:?=.&+%;\\-{}$]+)\\1");
 
         Matcher matcher = pattern.matcher(content.toString());
 
@@ -40,8 +41,10 @@ public class test {
 
             // Giữ lại nếu có ít nhất 1 dấu /
             if (url.contains("/")) {
-                endpoints.add(url.replaceAll("\\?.*", ""));
+                String cleaned = url.replaceAll("\\\\/", "/").replaceAll("\\?.*", "");
+                endpoints.add(cleaned);
             }
+
         }
 
         System.out.println("📦 Các endpoint trích được:");

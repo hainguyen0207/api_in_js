@@ -88,9 +88,13 @@ public class MyHttpHandler implements HttpHandler {
         }
     }
 
+
     private Set<String> extractEndpoints(String content) {
         Set<String> endpoints = new LinkedHashSet<>();
-        Pattern pattern = Pattern.compile("(['\"`])((https?:)?[\\w:/?=.&+%;\\-{}$]+)\\1");
+
+        //        Pattern pattern = Pattern.compile("(['\"`])((https?:)?[\\w:/?=.&+%;\\-{}$]+)\\1");
+
+        Pattern pattern = Pattern.compile("(['\"`])((https?:)?[\\\\/\\w:?=.&+%;\\-{}$]+)\\1");
         Matcher matcher = pattern.matcher(content);
 
         while (matcher.find()) {
@@ -104,12 +108,29 @@ public class MyHttpHandler implements HttpHandler {
             if (url.matches("(?i)^(data|blob):.*")) continue;
 
             if (url.contains("/")) {
-                endpoints.add(url.replaceAll("\\?.*", ""));
+                String cleaned = url.replaceAll("\\\\/", "/").replaceAll("\\?.*", "");
+                if (!isDynamicEndpoint(cleaned)) {
+                    endpoints.add(cleaned);
+                }
             }
         }
 
         return endpoints;
     }
+
+    private boolean isDynamicEndpoint(String path) {
+        String[] segments = path.split("/");
+        for (String seg : segments) {
+            if (seg.length() > 40 && seg.matches("[a-zA-Z0-9]+")) {
+                return true;
+            }
+            if (seg.matches("\\d{6,}")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     private boolean isUrlInSiteMap(String apiPath) {
         for (HttpRequestResponse item : api.siteMap().requestResponses()) {
