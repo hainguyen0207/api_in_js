@@ -39,7 +39,7 @@ public class MyHttpHandler implements HttpHandler {
                 String fullUrl = req.url();
 
 
-                if (!scopeReady) {
+                if (scopeReady) {
                     if (!isValidHttpUrl(fullUrl) || !safeIsInScope(fullUrl)) {
                         if (!warnedNoScope) {
                             warnedNoScope = true;
