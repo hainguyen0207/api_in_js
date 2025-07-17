@@ -11,6 +11,8 @@
 - So sánh API đã trích xuất với SiteMap.
 - Tránh trùng lặp endpoint.
 - Lưu và tải dữ liệu tự động (`AppData\Local\ApiJS\api.csv`)
-- Cho phép người dùng chọn nơi lưu file CSV.
+- Load file có sẵn
 - Nút “Reset Status” kiểm tra lại các API ❌.
 - Nút “Clear” để xóa bảng và file.
+- Tìm kiếm và lọc api
+- Xuất những api có trạng thái là X
