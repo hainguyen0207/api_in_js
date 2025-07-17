@@ -16,7 +16,7 @@ public class APITab {
     private final JTable table;
     private final DefaultTableModel model;
     private final MontoyaApi api;
-    private final Set<String> seenApis = new HashSet<>();
+    private final Set<String> seenApiKeys = new HashSet<>();
     private final List<Object[]> allRows = new ArrayList<>();
     private File currentSaveFile;
     private final String defaultSavePath = System.getenv("LOCALAPPDATA") + "/ApiJS/api.csv";
@@ -24,9 +24,9 @@ public class APITab {
     private final JLabel filePathLabel;
     private final JTextField filterField;
     private final JComboBox<String> statusCombo;
+    private final JTextField searchApiField = new JTextField(15);
 
     public APITab(MontoyaApi api) {
-        // Khởi tạo các thành phần giao diện
         this.api = api;
         panel = new JPanel(new BorderLayout());
 
@@ -64,41 +64,38 @@ public class APITab {
         JButton clearButton = new JButton("Clear");
         clearButton.addActionListener(e -> clearTable());
 
-// --- UI phần trên ---
+        JButton searchButton = new JButton("Tìm API");
+        searchButton.addActionListener(e -> searchAPI());
 
-// Panel bên trái: hiển thị đường dẫn
         JPanel pathPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         pathPanel.add(filePathLabel);
 
-// Panel bên phải: lọc ký tự và trạng thái
         JPanel filterPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         filterPanel.add(new JLabel("Lọc ký tự:"));
         filterPanel.add(filterField);
         filterPanel.add(new JLabel("Trạng thái:"));
         filterPanel.add(statusCombo);
         filterPanel.add(filterButton);
+        filterPanel.add(new JLabel("Tìm API:"));
+        filterPanel.add(searchApiField);
+        filterPanel.add(searchButton);
 
-// Gộp cả trái và phải
         JPanel filterAndPathPanel = new JPanel(new BorderLayout());
         filterAndPathPanel.add(pathPanel, BorderLayout.WEST);
         filterAndPathPanel.add(filterPanel, BorderLayout.EAST);
 
-// Panel các nút chức năng
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttonPanel.add(resetButton);
         buttonPanel.add(clearButton);
         buttonPanel.add(loadButton);
         buttonPanel.add(exportErrorButton);
 
-// Top panel chứa cả filter và nút
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.add(filterAndPathPanel, BorderLayout.NORTH);
         topPanel.add(buttonPanel, BorderLayout.SOUTH);
 
-// Thêm vào panel chính
         panel.add(topPanel, BorderLayout.NORTH);
         panel.add(scrollPane, BorderLayout.CENTER);
-
 
         File configDir = new File(System.getenv("LOCALAPPDATA") + "/ApiJS");
         if (!configDir.exists()) configDir.mkdirs();
@@ -116,8 +113,9 @@ public class APITab {
 
     public void addEntry(String fullUrl, String apiExtracted, String request, String response, boolean inSiteMap) {
         try {
-            if (seenApis.contains(apiExtracted)) return;
-            seenApis.add(apiExtracted);
+            String key = fullUrl + "|" + apiExtracted;
+            if (seenApiKeys.contains(key)) return;
+            seenApiKeys.add(key);
 
             Object[] row = new Object[]{model.getRowCount() + 1, fullUrl, apiExtracted, inSiteMap ? "✅" : "❌"};
             allRows.add(row);
@@ -151,6 +149,17 @@ public class APITab {
             boolean matchesStatus = statusFilter.equals("Tất cả") || status.equals(statusFilter);
 
             if (matchesFilter && matchesStatus) {
+                model.addRow(row);
+            }
+        }
+    }
+
+    private void searchAPI() {
+        String keyword = searchApiField.getText().trim();
+        model.setRowCount(0);
+
+        for (Object[] row : allRows) {
+            if (keyword.isEmpty() || row[2].toString().contains(keyword)) {
                 model.addRow(row);
             }
         }
@@ -242,7 +251,7 @@ public class APITab {
                 if (cols.length == 4) {
                     Object[] cleaned = new Object[4];
                     for (int i = 0; i < 4; i++) cleaned[i] = cols[i].replaceAll("^\"|\"$", "");
-                    seenApis.add((String) cleaned[2]);
+                    seenApiKeys.add(cleaned[1] + "|" + cleaned[2]);
                     allRows.add(cleaned);
                     model.addRow(cleaned);
                 }
@@ -270,7 +279,7 @@ public class APITab {
 
     private void clearTable() {
         model.setRowCount(0);
-        seenApis.clear();
+        seenApiKeys.clear();
         allRows.clear();
     }
 }
