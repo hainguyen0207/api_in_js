@@ -32,9 +32,26 @@ public class MyHttpHandler implements HttpHandler {
 
     private static final Pattern P_FETCH = Pattern.compile("\\bfetch\\s*\\(\\s*(['\"])\\s*(\\/?[A-Za-z0-9_\\-./?&=%]+)\\s*\\1", Pattern.CASE_INSENSITIVE);
 
-    //private static final Pattern P_REL_GENERIC = Pattern.compile("(['\"])\\s*(\\/[A-Za-z0-9_\\-./?&=%]+)\\s*\\1");
     private static final Pattern P_REL_GENERIC = Pattern.compile("(['\"])\\s*(/[A-Za-z0-9_\\-./?&=%]+)\\s*\\1(?=[\\s,;+)])", Pattern.CASE_INSENSITIVE);
-    //private static final Pattern P_REL_GENERIC = Pattern.compile("(['\"])(/[^'\"\\s]+)\\1");
+
+    // Bắt chuẩn HTML attribute dạng href="/path" src="/path" action="/path"
+    // Chỉ bắt các path bắt đầu bằng "/" (ưu tiên)
+    private static final Pattern P_HTML_ATTR_LEADING_SLASH = Pattern.compile("(href|src|action)\\s*=\\s*(['\"])(/[^'\" >]+)\\2", Pattern.CASE_INSENSITIVE);
+
+    //ref="api/list", src="modules/user.js"
+    private static final Pattern P_HTML_ATTR_ANY = Pattern.compile("(href|src|action)\\s*=\\s*(['\"])([^'\" >]+)\\2", Pattern.CASE_INSENSITIVE);
+
+    // data-url, data-href
+    private static final Pattern P_HTML_DATA_URL = Pattern.compile("data-(url|href)\\s*=\\s*(['\"])(/[^'\" >]+)\\2", Pattern.CASE_INSENSITIVE);
+
+    // href=/api/x (không có quote)
+    private static final Pattern P_HTML_ATTR_NO_QUOTE = Pattern.compile("(href|src|action)=(/[^\\s>]+)", Pattern.CASE_INSENSITIVE);
+
+    // "path" + variable
+    private static final Pattern P_QUOTE_PLUS = Pattern.compile("(['\"])(/[^'\"]+)\\1\\s*\\+", Pattern.CASE_INSENSITIVE);
+
+    // template literal dạng ${var}/path
+    private static final Pattern P_TEMPLATE_COMPLEX = Pattern.compile("\\$\\{[^}]+}/([A-Za-z0-9_\\-./?&=%]+)");
 
 
     private static final Pattern P_ABS = Pattern.compile("(https?://[A-Za-z0-9_\\-.:]+\\/[A-Za-z0-9_\\-./?&=%]+)");
@@ -180,6 +197,15 @@ public class MyHttpHandler implements HttpHandler {
         // 1) url: '/path'
         scan(text, P_URL_FIELD, 2, hits);
 
+        scan(text, P_HTML_ATTR_LEADING_SLASH, 3, hits);   // /path
+        scan(text, P_HTML_ATTR_ANY, 3, hits);             // full catch-all
+
+        scan(text, P_HTML_DATA_URL, 3, hits);
+        scan(text, P_HTML_ATTR_NO_QUOTE, 2, hits);
+        scan(text, P_QUOTE_PLUS, 2, hits);
+        scan(text, P_TEMPLATE_COMPLEX, 1, hits);
+
+
         scan(text, P_ABS_IN_QUOTES, 1, hits);
 
         scan(text, P_NO_SLASH_PREFIX, 1, hits);
@@ -203,10 +229,6 @@ public class MyHttpHandler implements HttpHandler {
         // 7) backup: mọi '/path' trong quote
         scan(text, P_REL_GENERIC, 2, hits);
 
-        // 8) backup: mọi '/path' trong quote
-        scan(text, P_REL_GENERIC, 2, hits);
-
-        //
         //scan(text, P_METHOD_CALL, 3, hits);
         //scan(text, P_QUOTE_PLUS, 2, hits);
 
