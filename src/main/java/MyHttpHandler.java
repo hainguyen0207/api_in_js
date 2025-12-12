@@ -36,7 +36,9 @@ public class MyHttpHandler implements HttpHandler {
 
     // Bắt chuẩn HTML attribute dạng href="/path" src="/path" action="/path"
     // Chỉ bắt các path bắt đầu bằng "/" (ưu tiên)
-    private static final Pattern P_HTML_ATTR_LEADING_SLASH = Pattern.compile("(href|src|action)\\s*=\\s*(['\"])(/[^'\" >]+)\\2", Pattern.CASE_INSENSITIVE);
+    //private static final Pattern P_HTML_ATTR_LEADING_SLASH = Pattern.compile("(href|src|action)\\s*=\\s*(['\"])(/[^'\" >]+)\\2", Pattern.CASE_INSENSITIVE);
+    private static final Pattern P_HTML_ATTR_LEADING_SLASH = Pattern.compile("(href|src|action)\\s*=\\s*(['\"])(/[^'\"> ]+)\\2", Pattern.CASE_INSENSITIVE);
+
 
     //ref="api/list", src="modules/user.js"
     private static final Pattern P_HTML_ATTR_ANY = Pattern.compile("(href|src|action)\\s*=\\s*(['\"])([^'\" >]+)\\2", Pattern.CASE_INSENSITIVE);
